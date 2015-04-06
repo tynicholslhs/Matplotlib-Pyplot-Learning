@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from matplotlib.patches import Ellipse
+from matplotlib.patches import Ellipse, Circle
 import numpy as np
 import math
 
@@ -71,7 +71,7 @@ def graph_ellipse(focus1 = (0, 0), focus2 = (0, 0), eccentricity = 0.5, xbounds 
     #set the length of the major axis using the distance and eccentricity formulae
     majaxis = foci_distance/eccentricity
     
-    #set the length of the minor axis using the major axis and the 
+    #set the length of the minor axis using the major axis and the eccentricity
     minaxis = math.sqrt(majaxis**2 - foci_distance**2)
     
     #if the ellipse is not vertically oriented along its major axis
@@ -87,7 +87,7 @@ def graph_ellipse(focus1 = (0, 0), focus2 = (0, 0), eccentricity = 0.5, xbounds 
         ellipse_angle = 90
     
     #create a new ellipse object with the given properties, setting the fill to be false
-    ellipse = Ellipse(xy = (0, 0), width = majaxis, height = minaxis, angle = ellipse_angle, fill = False)
+    ellipse = Ellipse(xy = (run/2, rise/2), width = majaxis, height = minaxis, angle = ellipse_angle, fill = False)
     
     #set the bounds of the graph
     ax.set_xlim(xbounds[0], xbounds[1])
@@ -97,20 +97,33 @@ def graph_ellipse(focus1 = (0, 0), focus2 = (0, 0), eccentricity = 0.5, xbounds 
     ax.add_patch(ellipse)
     
     #TODO: Ensure the orbit graph function is indeed functional by checking values
-def graph_orbit(body_location = (0, 0), body_radius = 6371000, apoapsis = (-14000000, 0), periapsis = (7000000, 0), xbounds = (-30000000, 30000000) , ybounds = (-30000000, 30000000)):
+def graph_orbit(body_radius = 6371000, apoapsis_alt = 20000000, periapsis_alt = 7000000, orbit_angle = 0, xbounds = (-30000000, 30000000) , ybounds = (-30000000, 30000000)):
     
     #compute the major axis from the distance between the apoapsis and the periapsis
-    orbit_majaxis = math.sqrt((apoapsis[0] - periapsis[0])**2 + (apoapsis[1] - periapsis[1])**2)
-    
-    #compute the minimum altitude of the orbit relative to the body's surface
-    orbit_min_altitude = math.sqrt((periapsis[0] - (body_location[0] + body_radius))**2 + (periapsis[1] - (body_location[1] + body_radius))**2)
-    
-    #compute the minimum eccentricity of the orbit based upon the necessary altitude
-    orbit_eccentricity = (orbit_majaxis - 2 * orbit_min_altitude)/orbit_majaxis
+    orbit_majaxis = apoapsis_alt + periapsis_alt + 2 * body_radius
     
     #compute the locations of the orbit foci
-    orbit_focus1 = body_location
-    orbit_focus2 = (periapsis[0] - (apoapsis[0] - body_location[0]), periapsis[1] - (apoapsis[1] - body_location[1]))
+    orbit_focus1 = (0, 0)
+    orbit_focus2 = ((orbit_majaxis - body_radius), 0)
+    
+    print(orbit_focus2)
+    
+    #compute the distance between the foci
+    foci_distance = orbit_focus2[0] - orbit_focus1[0]
+    
+    #compute the minor axis of the orbit
+    orbit_minaxis = math.sqrt(orbit_majaxis**2 - foci_distance**2)
+    
+    #compute the center of the orbit
+    orbit_center = ((orbit_focus1[0] - orbit_focus2[0])/2, (orbit_focus1[1] - orbit_focus2[1])/2)
     
     #graph the ellipse
-    graph_ellipse(orbit_focus1, orbit_focus2, orbit_eccentricity, xbounds, ybounds)
+    orbit = Ellipse(orbit_center, orbit_majaxis, orbit_minaxis, angle = orbit_angle + 180, fill = False)
+    
+    #instantiate the graph, set the aspect ratio to equal, add the celestial body and the orbit, and set the bounds of the graph
+    ax = plt.gca()
+    ax.axis('equal')
+    ax.add_artist(Circle((0, 0), body_radius, color = 'g'))
+    ax.add_artist(orbit)
+    ax.set_xlim(xbounds[0], xbounds[1])
+    ax.set_ylim(ybounds[0], ybounds[1])
