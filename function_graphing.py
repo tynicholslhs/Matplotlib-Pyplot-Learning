@@ -95,3 +95,22 @@ def graph_ellipse(focus1 = (0, 0), focus2 = (0, 0), eccentricity = 0.5, xbounds 
     
     #add the ellipse to the graph
     ax.add_patch(ellipse)
+    
+    #TODO: Ensure the orbit graph function is indeed functional by checking values
+def graph_orbit(body_location = (0, 0), body_radius = 6371000, apoapsis = (-14000000, 0), periapsis = (7000000, 0), xbounds = (-30000000, 30000000) , ybounds = (-30000000, 30000000)):
+    
+    #compute the major axis from the distance between the apoapsis and the periapsis
+    orbit_majaxis = math.sqrt((apoapsis[0] - periapsis[0])**2 + (apoapsis[1] - periapsis[1])**2)
+    
+    #compute the minimum altitude of the orbit relative to the body's surface
+    orbit_min_altitude = math.sqrt((periapsis[0] - (body_location[0] + body_radius))**2 + (periapsis[1] - (body_location[1] + body_radius))**2)
+    
+    #compute the minimum eccentricity of the orbit based upon the necessary altitude
+    orbit_eccentricity = (orbit_majaxis - 2 * orbit_min_altitude)/orbit_majaxis
+    
+    #compute the locations of the orbit foci
+    orbit_focus1 = body_location
+    orbit_focus2 = (periapsis[0] - (apoapsis[0] - body_location[0]), periapsis[1] - (apoapsis[1] - body_location[1]))
+    
+    #graph the ellipse
+    graph_ellipse(orbit_focus1, orbit_focus2, orbit_eccentricity, xbounds, ybounds)
