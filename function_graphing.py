@@ -97,19 +97,17 @@ def graph_ellipse(focus1 = (0, 0), focus2 = (0, 0), eccentricity = 0.5, xbounds 
     ax.add_patch(ellipse)
     
     #TODO: Ensure the orbit graph function is indeed functional by checking values
-def graph_orbit(body_radius = 6371000, apoapsis_alt = 20000000, periapsis_alt = 7000000, orbit_angle = 0, xbounds = (-30000000, 30000000) , ybounds = (-30000000, 30000000)):
+def graph_orbit(body_radius = 10, semi_majaxis = 35, eccentricity = 0.1, xbounds = (-100, 100) , ybounds = (-100, 100)):
     
     #compute the major axis from the distance between the apoapsis and the periapsis
-    orbit_majaxis = apoapsis_alt + periapsis_alt + 2 * body_radius
+    orbit_majaxis = semi_majaxis * 2
+    
+    #compute the distance between the foci
+    foci_distance = orbit_majaxis * eccentricity
     
     #compute the locations of the orbit foci
     orbit_focus1 = (0, 0)
-    orbit_focus2 = ((orbit_majaxis - body_radius), 0)
-    
-    print(orbit_focus2)
-    
-    #compute the distance between the foci
-    foci_distance = orbit_focus2[0] - orbit_focus1[0]
+    orbit_focus2 = (foci_distance, 0)
     
     #compute the minor axis of the orbit
     orbit_minaxis = math.sqrt(orbit_majaxis**2 - foci_distance**2)
@@ -118,7 +116,7 @@ def graph_orbit(body_radius = 6371000, apoapsis_alt = 20000000, periapsis_alt = 
     orbit_center = ((orbit_focus1[0] - orbit_focus2[0])/2, (orbit_focus1[1] - orbit_focus2[1])/2)
     
     #graph the ellipse
-    orbit = Ellipse(orbit_center, orbit_majaxis, orbit_minaxis, angle = orbit_angle + 180, fill = False)
+    orbit = Ellipse(orbit_center, orbit_majaxis, orbit_minaxis, angle = 0, fill = False)
     
     #instantiate the graph, set the aspect ratio to equal, add the celestial body and the orbit, and set the bounds of the graph
     ax = plt.gca()
