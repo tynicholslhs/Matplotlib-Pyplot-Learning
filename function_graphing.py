@@ -96,8 +96,7 @@ def graph_ellipse(focus1 = (0, 0), focus2 = (0, 0), eccentricity = 0.5, xbounds 
     #add the ellipse to the graph
     ax.add_patch(ellipse)
     
-    #TODO: Ensure the orbit graph function is indeed functional by checking values
-def graph_orbit(body_radius = 10, semi_majaxis = 35, eccentricity = 0.1, xbounds = (-100, 100) , ybounds = (-100, 100)):
+def graph_orbit(body_radius = 10, semi_majaxis = 35, eccentricity = 0.1, arg_periapsis = 0, xbounds = (-100, 100) , ybounds = (-100, 100)):
     
     #compute the major axis from the distance between the apoapsis and the periapsis
     orbit_majaxis = semi_majaxis * 2
@@ -106,8 +105,11 @@ def graph_orbit(body_radius = 10, semi_majaxis = 35, eccentricity = 0.1, xbounds
     foci_distance = orbit_majaxis * eccentricity
     
     #compute the locations of the orbit foci
-    orbit_focus1 = (0, 0)
-    orbit_focus2 = (foci_distance, 0)
+    orbit_focus1 = (float(foci_distance / 2 * math.cos(arg_periapsis)), float(foci_distance / 2 * math.sin(arg_periapsis)))
+    orbit_focus2 = (orbit_focus1[0] - float(foci_distance * math.cos(arg_periapsis)), orbit_focus1[1] - float(foci_distance * math.sin(arg_periapsis)))
+    
+    #print the foci locations for debugging
+    print(orbit_focus1, orbit_focus2)
     
     #compute the minor axis of the orbit
     orbit_minaxis = math.sqrt(orbit_majaxis**2 - foci_distance**2)
@@ -116,12 +118,12 @@ def graph_orbit(body_radius = 10, semi_majaxis = 35, eccentricity = 0.1, xbounds
     orbit_center = ((orbit_focus1[0] - orbit_focus2[0])/2, (orbit_focus1[1] - orbit_focus2[1])/2)
     
     #graph the ellipse
-    orbit = Ellipse(orbit_center, orbit_majaxis, orbit_minaxis, angle = 0, fill = False)
+    orbit = Ellipse(orbit_center, orbit_majaxis, orbit_minaxis, angle = arg_periapsis, fill = False)
     
     #instantiate the graph, set the aspect ratio to equal, add the celestial body and the orbit, and set the bounds of the graph
     ax = plt.gca()
     ax.axis('equal')
-    ax.add_artist(Circle((0, 0), body_radius, color = 'g'))
-    ax.add_artist(orbit)
+    ax.add_patch(Circle((0, 0), body_radius, color = 'g'))
+    ax.add_patch(orbit)
     ax.set_xlim(xbounds[0], xbounds[1])
     ax.set_ylim(ybounds[0], ybounds[1])
