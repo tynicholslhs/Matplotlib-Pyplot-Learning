@@ -98,6 +98,9 @@ def graph_ellipse(focus1 = (0, 0), focus2 = (0, 0), eccentricity = 0.5, xbounds 
     
 def graph_orbit(body_radius = 10, semi_majaxis = 35, eccentricity = 0.1, arg_periapsis = 0, xbounds = (-100, 100) , ybounds = (-100, 100)):
     
+    #calculate the argument of periapsis in radians
+    arg_peri_rad = math.radians(arg_periapsis)
+    
     #compute the major axis from the distance between the apoapsis and the periapsis
     orbit_majaxis = semi_majaxis * 2
     
@@ -105,8 +108,8 @@ def graph_orbit(body_radius = 10, semi_majaxis = 35, eccentricity = 0.1, arg_per
     foci_distance = orbit_majaxis * eccentricity
     
     #compute the locations of the orbit foci
-    orbit_focus1 = (float(foci_distance / 2 * math.cos(arg_periapsis)), float(foci_distance / 2 * math.sin(arg_periapsis)))
-    orbit_focus2 = (orbit_focus1[0] - float(foci_distance * math.cos(arg_periapsis)), orbit_focus1[1] - float(foci_distance * math.sin(arg_periapsis)))
+    orbit_focus1 = (0, 0)
+    orbit_focus2 = (foci_distance * math.cos(arg_peri_rad), foci_distance * math.sin(arg_peri_rad))
     
     #print the foci locations for debugging
     print(orbit_focus1, orbit_focus2)
@@ -115,7 +118,9 @@ def graph_orbit(body_radius = 10, semi_majaxis = 35, eccentricity = 0.1, arg_per
     orbit_minaxis = math.sqrt(orbit_majaxis**2 - foci_distance**2)
     
     #compute the center of the orbit
-    orbit_center = ((orbit_focus1[0] - orbit_focus2[0])/2, (orbit_focus1[1] - orbit_focus2[1])/2)
+    orbit_center = (orbit_focus2[0]/2, orbit_focus2[1]/2)
+    
+    #print the center for debugging
     
     #graph the ellipse
     orbit = Ellipse(orbit_center, orbit_majaxis, orbit_minaxis, angle = arg_periapsis, fill = False)
